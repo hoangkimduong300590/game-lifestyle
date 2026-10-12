@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vòng Quay Định Mệnh (The Life Spiral) - Full Version</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --accent-color: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --border-color: #334155;
+            --danger-color: #f43f5e;
+            --success-color: #22c55e;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 750px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: #020617;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            letter-spacing: 1px;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 12px 20px;
+            background-color: #111827;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.85rem;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.75rem;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .content-area {
+            padding: 25px;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .story-box {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            white-space: pre-line;
+        }
+
+        .choices-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        button.choice-btn {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            text-align: left;
+        }
+
+        button.choice-btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .tarot-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .tarot-card {
+            background-color: #334155;
+            border: 2px dashed var(--accent-color);
+            height: 110px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .tarot-card:hover {
+            background-color: var(--accent-color);
+            color: #000;
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 600px) {
+            .stats-bar { grid-template-columns: repeat(2, 1fr); }
+            .tarot-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <header>
+            <h1>VÒNG QUAY ĐỊNH MỆNH</h1>
+        </header>
+
+        <div class="stats-bar" id="statsBar" style="display: none;">
+            <div class="stat-item"><span class="stat-label">Tuổi / Giai đoạn</span><span class="stat-value" id="valAge">6 tuổi</span></div>
+            <div class="stat-item"><span class="stat-label">Trí tuệ</span><span class="stat-value" id="valIntel">50</span></div>
+            <div class="stat-item"><span class="stat-label">Sức khỏe</span><span class="stat-value" id="valHealth">80</span></div>
+            <div class="stat-item"><span class="stat-label">Tâm trạng</span><span class="stat-value" id="valHappy">70</span></div>
+            <div class="stat-item"><span class="stat-label">Tài sản</span><span class="stat-value" id="valMoney">5,000,000 đ</span></div>
+            <div class="stat-item"><span class="stat-label">Gia cảnh</span><span class="stat-value" id="valBg">Bình thường</span></div>
+        </div>
+
+        <div class="content-area">
+            <div class="story-box" id="storyText">
+                Chào mừng bạn đến với <strong>Vòng Quay Định Mệnh</strong>.<br>Mỗi quyết định sẽ định hình cuộc đời bạn từ lúc cất tiếng khóc chào đời cho đến khi nhắm mắt xuôi tay.<br><br>Hãy chọn giới tính của nhân vật:
+            </div>
+            <div class="choices-container" id="choicesBox">
+                <button class="choice-btn" onclick="setGender('Nam')">Nam</button>
+                <button class="choice-btn" onclick="setGender('Nữ')">Nữ</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let gameState = {
+            gender: 'Nam',
+            age: 6,
+            stats: { intel: 50, health: 80, happy: 70, money: 5000000, fame: 10 },
+            background: '',
+            familyRelation: '',
+            parentFactor: 50,
+            career: 'Chưa có',
+            married: false,
+            childrenCount: 0,
+            eventsTriggered: { plot1: false, plot2: false, plot3: false }
+        };
+
+        function setGender(gender) {
+            gameState.gender = gender;
+            showTarotScreen();
+        }
+
+        function showTarotScreen() {
+            document.getElementById('storyText').innerHTML = 
+                `Bạn đã chọn giới tính: <strong>${gameState.gender}</strong>.<br><br>Bây giờ, hãy chọn 1 trong 5 lá bài Tarot ẩn bên dưới để định đoạt xuất thân và gia đình của bạn:`;
+            
+            let choicesHtml = '<div class="tarot-grid">';
+            for (let i = 1; i <= 5; i++) {
+                choicesHtml += `<div class="tarot-card" onclick="drawTarot(${i})">Lá bài ${i}</div>`;
+            }
+            choicesHtml += '</div>';
+            document.getElementById('choicesBox').innerHTML = choicesHtml;
+        }
+
+        function drawTarot(cardIndex) {
+            const rand = Math.random() * 100;
+            if (rand < 5) {
+                gameState.background = "Nghèo";
+                gameState.money = 500000;
+                gameState.parentFactor = 40;
+            } else if (rand < 40) {
+                gameState.background = "Bình thường";
+                gameState.money = 5000000;
+                gameState.parentFactor = 60;
+            } else if (rand < 70) {
+                gameState.background = "Khá giả";
+                gameState.money = 25000000;
+                gameState.parentFactor = 75;
+            } else if (rand < 90) {
+                gameState.background = "Giàu có";
+                gameState.money = 150000000;
+                gameState.parentFactor = 90;
+            } else {
+                gameState.background = "Tài phiệt";
+                gameState.money = 1200000000;
+                gameState.parentFactor = 95;
+            }
+
+            const famRand = Math.random() * 100;
+            if (famRand < 70) {
+                gameState.familyRelation = "Hạnh phúc";
+            } else if (famRand < 90) {
+                gameState.familyRelation = "Đơn thân";
+                gameState.parentFactor -= 15;
+            } else {
+                gameState.familyRelation = "Mồ côi";
+                gameState.parentFactor = 20;
+            }
+
+            document.getElementById('statsBar').style.display = 'grid';
+            updateStatsUI();
+
+            document.getElementById('storyText').innerHTML = 
+                `Bạn lật lá bài số ${cardIndex}. Định mệnh đã định hình:<br>` +
+                `- Hoàn cảnh: <strong>${gameState.background}</strong><br>` +
+                `- Gia đình: <strong>${gameState.familyRelation}</strong><br><br>` +
+                `Bạn cất tiếng khóc chào đời và bắt đầu bước vào hành trình cuộc sống năm 6 tuổi.`;
+
+            document.getElementById('choicesBox').innerHTML = `
+                <button class="choice-btn" onclick="nextYear()">Bắt đầu hành trình (Năm 6 tuổi)</button>
+            `;
+        }
+
+        function updateStatsUI() {
+            document.getElementById('valAge').innerText = `${gameState.age} tuổi`;
+            document.getElementById('valIntel').innerText = gameState.stats.intel;
+            document.getElementById('valHealth').innerText = gameState.stats.health;
+            document.getElementById('valHappy').innerText = gameState.stats.happy;
+            document.getElementById('valMoney').innerText = gameState.money.toLocaleString() + ' đ';
+            document.getElementById('valBg').innerText = gameState.background;
+        }
+
+        function checkRandomEvents() {
+            // Plot Twist 2: Phá sản gia đình (12 - 14 tuổi nếu giàu/tài phiệt)
+            if (!gameState.eventsTriggered.plot2 && gameState.age >= 12 && gameState.age <= 14 && (gameState.background === 'Giàu có' || gameState.background === 'Tài phiệt')) {
+                if (Math.random() < 0.4) {
+                    gameState.eventsTriggered.plot2 = true;
+                    gameState.background = 'Nghèo';
+                    gameState.money = 1000000;
+                    return `⚡ **BIẾN CỐ BẤT NGỜ:** Việc kinh doanh của gia đình gặp đại họa! Bố mẹ vướng vào vòng lao lý, gia sản tịch thu sạch. Bạn rơi vào cảnh nghèo khó túng quẫn từ tuổi thiếu niên.`;
+                }
+            }
+
+            // Plot Twist 1: Sự thật thân thế (16 - 18 tuổi)
+            if (!gameState.eventsTriggered.plot1 && gameState.age >= 16 && gameState.age <= 18) {
+                if (Math.random() < 0.35) {
+                    gameState.eventsTriggered.plot1 = true;
+                    return `⚡ **BÍ MẬT THÂN THẾ:** Một phong thư cũ hé lộ bạn không phải con ruột của gia đình hiện tại, bạn thực chất được trao nhầm trong bệnh viện hoặc là con nuôi của một dòng tộc lớn. Tâm trạng bạn chấn động mạnh!`;
+                }
+            }
+
+            // Plot Twist 3: Thiên tài / Cơ hội vàng (bất kỳ tuổi nào sau 10)
+            if (!gameState.eventsTriggered.plot3 && gameState.age >= 15 && gameState.age <= 25) {
+                if (Math.random() < 0.25) {
+                    gameState.eventsTriggered.plot3 = true;
+                    gameState.money += 500000000;
+                    gameState.stats.fame += 30;
+                    return `⚡ **CƠ HỘI VÀNG:** Dự án code/sản phẩm sáng tạo bạn làm thêm bất ngờ gây sốt toàn cầu (Viral)! Bạn kiếm được khoản lợi nhuận khổng lồ và nổi tiếng khắp nơi.`;
+                }
+            }
+            return null;
+        }
+
+        function nextYear() {
+            // Kiểm tra điều kiện kết thúc (Tuổi 70 - 100 hoặc Sức khỏe <= 0)
+            if (gameState.age >= 75 || gameState.stats.health <= 0) {
+                showEnding();
+                return;
+            }
+
+            gameState.age++;
+            
+            // Xử lý biến cố ngẫu nhiên trước
+            let specialEvent = checkRandomEvents();
+            if (specialEvent) {
+                updateStatsUI();
+                document.getElementById('storyText').innerHTML = specialEvent;
+                document.getElementById('choicesBox').innerHTML = `
+                    <button class="choice-btn" onclick="proceedNormalEvent()">Tiếp tục cuộc sống năm ${gameState.age} tuổi</button>
+                `;
+                return;
+            }
+
+            proceedNormalEvent();
+        }
+
+        function proceedNormalEvent() {
+            updateStatsUI();
+            let age = gameState.age;
+            let text = `Bạn đang ở độ tuổi <strong>${age}</strong>.`;
+            let htmlChoices = "";
+
+            if (age >= 7 && age <= 17) {
+                // Giai đoạn phổ thông
+                text += ` Năm học này bạn đối mặt với các hoạt động trường lớp và sinh hoạt cá nhân.`;
+                htmlChoices = `
+                    <button class="choice-btn" onclick="makeChoice('study')">Chăm chỉ học tập, ôn luyện sách vở (+ Trí tuệ, - Sức khỏe)</button>
+                    <button class="choice-btn" onclick="makeChoice('play')">Chơi game, thể thao và đi chơi cùng bạn bè (+ Sức khỏe/Tâm trạng, - Trí tuệ)</button>
+                    <button class="choice-btn" onclick="makeChoice('ask_money')">Xin tiền ba mẹ mua sắm trang thiết bị học tập/giải trí</button>
+                `;
+            } else if (age >= 18 && age <= 21) {
+                // Giai đoạn Đại học
+                if (age === 18) {
+                    text += ` Bạn đứng trước ngưỡng cửa Đại học. Điểm trí tuệ hiện tại là ${gameState.stats.intel}. Bạn chọn hướng đi nào?`;
+                    htmlChoices = `
+                        <button class="choice-btn" onclick="chooseUniversity('Y_Luat')">Thi vào ngành Y / Luật (Yêu cầu Trí tuệ >= 65)</button>
+                        <button class="choice-btn" onclick="chooseUniversity('KyThuat')">Thi vào ngành Kỹ thuật / Công nghệ (Yêu cầu Trí tuệ >= 55)</button>
+                        <button class="choice-btn" onclick="chooseUniversity('NghệThuat')">Thi vào ngành Nghệ thuật / Tự do</button>
+                    `;
+                } else {
+                    text += ` Bạn đang là sinh viên Đại học năm thứ ${age - 18}. Cuộc sống sinh viên trôi qua với nhiều bài tập và đồ án.`;
+                    htmlChoices = `
+                        <button class="choice-btn" onclick="makeChoice('uni_study')">Tập trung nghiên cứu chuyên ngành (+ Trí tuệ)</button>
+                        <button class="choice-btn" onclick="makeChoice('uni_parttime')">Đi làm thêm trang trải cuộc sống (+ Tiền tài, - Sức khỏe)</button>
+                        <button class="choice-btn" onclick="makeChoice('uni_relax')">Tham gia CLB và tận hưởng thanh xuân (+ Tâm trạng)</button>
+                    `;
+                }
+            } else if (age >= 22 && age <= 35) {
+                // Giai đoạn Sự nghiệp & Tình yêu
+                if (age === 22 && gameState.career === 'Chưa có') {
+                    text += ` Bạn đã tốt nghiệp cử nhân! Bạn quyết định bước chân vào con đường sự nghiệp nào?`;
+                    htmlChoices = `
+                        <button class="choice-btn" onclick="chooseCareer('VanPhong')">Làm nhân viên văn phòng (Ổn định, lương đều hàng tháng)</button>
+                        <button class="choice-btn" onclick="chooseCareer('KhoiNghiep')">Khởi nghiệp kinh doanh riêng (Rủi ro cao, tiềm năng tài chính lớn)</button>
+                        <button class="choice-btn" onclick="chooseCareer('Freelancer')">Làm Freelancer tự do (Tự do thời gian, thu nhập bấp bênh)</button>
+                    `;
+                } else {
+                    text += ` Bạn đang ở độ tuổi trưởng thành, bận rộn với công việc (${gameState.career}) và các mối quan hệ xã hội.`;
+                    htmlChoices = `
+                        <button class="choice-btn" onclick="makeChoice('work_hard')">Tăng ca cật lực thăng tiến sự nghiệp (+ Tiền tài, - Sức khỏe)</button>
+                        <button class="choice-btn" onclick="makeChoice('find_love')">Tìm kiếm tình yêu và xây dựng gia đình</button>
+                        <button class="choice-btn" onclick="makeChoice('relax_life')">Hưởng thụ cuộc sống, đi du lịch chữa lành (+ Tâm trạng)</button>
+                    `;
+                }
+            } else {
+                // Giai đoạn trung niên & tuổi già
+                text += ` Thời gian trôi đi, bạn đã bước vào tuổi trung niên/xế chiều. Nhìn lại những thành tựu đã qua trong đời.`;
+                htmlChoices = `
+                    <button class="choice-btn" onclick="makeChoice('senior_peace')">Dưỡng sinh, chăm sóc gia đình và con cháu (+ Sức khỏe/Tâm trạng)</button>
+                    <button class="choice-btn" onclick="makeChoice('senior_invest')">Tiếp tục đầu tư tài chính tích lũy gia tài (+ Tiền tài)</button>
+                `;
+            }
+
+            document.getElementById('storyText').innerHTML = text;
+            document.getElementById('choicesBox').innerHTML = htmlChoices;
+        }
+
+        function makeChoice(type) {
+            let log = "";
+            switch(type) {
+                case 'study':
+                    gameState.stats.intel += 6;
+                    gameState.stats.health -= 3;
+                    log = "Bạn miệt mài đèn sách, điểm số tăng cao nhưng cơ thể có phần mệt mỏi.";
+                    break;
+                case 'play':
+                    gameState.stats.health += 5;
+                    gameState.stats.happy += 8;
+                    gameState.stats.intel -= 3;
+                    log = "Bạn có những giờ phút vui chơi sảng khoái bên bạn bè, thể lực cải thiện rõ rệt.";
+                    break;
+                case 'ask_money':
+                    if(gameState.parentFactor > 60) {
+                        gameState.money += 2000000;
+                        gameState.stats.happy += 5;
+                        log = "Ba mẹ vui vẻ đồng ý và cấp thêm tiền cho bạn.";
+                    } else {
+                        gameState.stats.happy -= 8;
+                        log = "Ba mẹ từ chối và phàn nàn về chi tiêu của bạn.";
+                    }
+                    break;
+                case 'uni_study':
+                    gameState.stats.intel += 8;
+                    log = "Bạn đạt kết quả xuất sắc trong các học phần chuyên ngành.";
+                    break;
+                case 'uni_parttime':
+                    gameState.money += 8000000;
+                    gameState.stats.health -= 4;
+                    log = "Công việc làm thêm vất vả nhưng mang lại cho bạn thu nhập tự lập đầu tiên.";
+                    break;
+                case 'uni_relax':
+                    gameState.stats.happy += 10;
+                    log = "Những buổi cà phê, dạo phố giúp bạn có tinh thần thoải mái tuyệt vời.";
+                    break;
+                case 'work_hard':
+                    gameState.money += 25000000;
+                    gameState.stats.health -= 6;
+                    gameState.stats.happy -= 4;
+                    log = "Bạn lao tâm khổ tứ vì công việc, tài khoản tăng lên nhưng sức khỏe suy giảm.";
+                    break;
+                case 'find_love':
+                    if (!gameState.married && Math.random() < 0.7) {
+                        gameState.married = true;
+                        gameState.stats.happy += 20;
+                        log = "Bạn đã gặp được nửa kia tâm đầu ý hợp và tiến đến kết hôn hạnh phúc!";
+                    } else if (gameState.married) {
+                        gameState.childrenCount++;
+                        gameState.stats.happy += 15;
+                        log = "Gia đình chào đón thêm thành viên mới (đứa con thứ ${gameState.childrenCount}), trách nhiệm lớn hơn nhưng ngập tràn niềm vui.";
+                    } else {
+                        gameState.stats.happy -= 5;
+                        log = "Bạn vẫn chưa tìm được người phù hợp, cảm giác hơi cô đơn.";
+                    }
+                    break;
+                case 'relax_life':
+                    gameState.stats.happy += 12;
+                    gameState.stats.health += 4;
+                    log = "Bạn tạm gác lo âu để tận hưởng những chuyến đi dài ngày thư thái.";
+                    break;
+                case 'senior_peace':
+                    gameState.stats.health += 5;
+                    gameState.stats.happy += 10;
+                    log = "Cuộc sống bình yên bên con cháu giúp tâm hồn bạn vô cùng thanh thản.";
+                    break;
+                case 'senior_invest':
+                    gameState.money += 100000000;
+                    log = "Nhờ kinh nghiệm dày dặn, các quyết định đầu tư tuổi xế chiều mang lại khoản lợi nhuận lớn.";
+                    break;
+            }
+
+            updateStatsUI();
+            document.getElementById('storyText').innerHTML = log;
+            document.getElementById('choicesBox').innerHTML = `
+                <button class="choice-btn" onclick="nextYear()">Chuyển sang tuổi ${gameState.age + 1}</button>
+            `;
+        }
+
+        function chooseUniversity(major) {
+            if (major === 'Y_Luat') {
+                if (gameState.stats.intel >= 65) {
+                    gameState.career = 'Bác sĩ / Luật sư';
+                    gameState.stats.intel += 10;
+                    document.getElementById('storyText').innerHTML = `Bạn trúng tuyển xuất sắc ngành Y/Luật danh giá và hoàn thành chương trình thành công!`;
+                } else {
+                    gameState.career = 'Cử nhân dự bị';
+                    gameState.stats.happy -= 10;
+                    document.getElementById('storyText').innerHTML = `Điểm trí tuệ không đủ, bạn trượt nguyện vọng ngành Y/Luật và phải học hệ liên thông thay thế.`;
+                }
+            } else if (major === 'KyThuat') {
+                if (gameState.stats.intel >= 55) {
+                    gameState.career = 'Kỹ sư công nghệ';
+                    gameState.stats.intel += 8;
+                    document.getElementById('storyText').innerHTML = `Bạn hoàn thành xuất sắc bậc Kỹ sư công nghệ với nhiều đồ án thực tế.`;
+                } else {
+                    gameState.career = 'Kỹ thuật viên';
+                    document.getElementById('storyText').innerHTML = `Bạn chật vật qua các môn đại cương và tốt nghiệp với tấm bằng trung bình.`;
+                }
+            } else {
+                gameState.career = 'Nghệ sĩ tự do';
+                gameState.stats.happy += 15;
+                document.getElementById('storyText').innerHTML = `Bạn theo đuổi đam mê nghệ thuật, trải qua những năm tháng sinh viên đầy màu sắc và phóng khoáng.`;
+            }
+
+            updateStatsUI();
+            document.getElementById('choicesBox').innerHTML = `
+                <button class="choice-btn" onclick="nextYear()">Bước vào đời năm 22 tuổi</button>
+            `;
+        }
+
+        function chooseCareer(type) {
+            gameState.career = type === 'VanPhong' ? 'Nhân viên văn phòng' : (type === 'KhoiNghiep' ? 'CEO khởi nghiệp' : 'Freelancer tự do');
+            if (type === 'VanPhong') gameState.money += 15000000;
+            if (type === 'KhoiNghiep') {
+                if (Math.random() < 0.5) gameState.money += 150000000;
+                else { gameState.money -= 20000000; gameState.stats.happy -= 15; }
+            }
+            if (type === 'Freelancer') gameState.money += 20000000;
+
+            updateStatsUI();
+            document.getElementById('storyText').innerHTML = `Bạn đã chọn con đường: <strong>${gameState.career}</strong>. Cuộc đời sang trang mới!`;
+            document.getElementById('choicesBox').innerHTML = `
+                <button class="choice-btn" onclick="nextYear()">Tiếp tục hành trình sự nghiệp</button>
+            `;
+        }
+
+        function showEnding() {
+            document.getElementById('statsBar').style.display = 'none';
+            let happinessScore = Math.floor((gameState.stats.happy + gameState.stats.health + (gameState.stats.intel / 2)) / 3);
+            
+            document.getElementById('storyText').innerHTML = `
+                <h2>🪦 BÁO CÁO TỔNG KẾT CUỘC ĐỜI</h2>
+                Nhân vật đã khép lại hành trình dương thế ở tuổi <strong>${gameState.age}</strong>.<br><br>
+                - <strong>Nghề nghiệp cuối cùng:</strong> ${gameState.career}<br>
+                - <strong>Tổng tài sản tích lũy:</strong> ${gameState.money.toLocaleString()} đ<br>
+                - <strong>Tình trạng gia đình:</strong> ${gameState.married ? 'Đã kết hôn, có ' + gameState.childrenCount + ' con' : 'Độc thân suốt đời'}<br>
+                - <strong>Chỉ số cuối:</strong> Trí tuệ (${gameState.stats.intel}) | Sức khỏe (${gameState.stats.health}) | Tâm trạng (${gameState.stats.happy})<br><br>
+                ⭐ <strong>ĐIỂM HẠNH PHÚC ĐẠT ĐƯỢC: ${happinessScore} / 100</strong><br>
+                <em>"Cuộc đời giống như một cuộn phim quay chậm, dù vinh quang hay bình lặng, bạn đã đi hết trọn vẹn vòng quay của định mệnh."</em>
+            `;
+
+            document.getElementById('choicesBox').innerHTML = `
+                <button class="choice-btn" onclick="location.reload()">Chơi lại vòng đời mới</button>
+            `;
+        }
+    </script>
+</body>
+</html>
